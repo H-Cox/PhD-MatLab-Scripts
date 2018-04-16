@@ -54,7 +54,11 @@ errors = sqrt(diag(CovB));
 % format for output
 xo = [beta',errors];
 
-fit.x = linspace(min(x),max(x),max([1000,length(x)]));
+if size(x,2) > 1
+    fit.x = x;
+else
+    fit.x = linspace(min(x),max(x),max([1000,length(x)]));
+end
 
 % calculate resulting yfit
 yfit = modelfun(beta,fit.x);
