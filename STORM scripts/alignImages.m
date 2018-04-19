@@ -32,6 +32,8 @@ function fit = fitAlignment(image1,image2)
 
 [r,c] = size(image1);
 
+shrinkFactor = 1;
+
 if max([r,c]) > 1000
     shrinkFactor = round(max([r,c])/1000);
 end
