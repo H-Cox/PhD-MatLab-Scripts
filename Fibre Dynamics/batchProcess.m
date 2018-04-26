@@ -1,35 +1,59 @@
+%{ 
+%Id numbers for various groups of fibrils from initial dynamics paper
 freeID = [106,107,108,109,110,111,113,114,117];
-ID = [8,10,11,12,55,56,57,61,62,65,68,69,77,79,80,81,84,92,94,95];
-lID = [57,84,62,68,92,8,56,69,77,94,12];
-sID = [10,11,12,55,61,62,65,79,80,81,95];
-todo = [1, 3, 4, 5, 6, 7, 9, 13,43,44,45,46,47,122,123,124,126,127];
+
 allid = [1,3,4,5,6,7,8,9,10,11,12,13,43,44,45,46,47,52,53,54,55,56,57,...
     61,62,63,64,65,66,67,68,69,73,77,79,80,81,84,92,94,95,96,118,121,...
     122,123,124,126,127];
 goodid = [1,3,4,5,6,7,8,9,10,12,43,44,46,47,52,55,56,57,62,64,68,69,77,...
         79,80,81,84,92,94,95,118,121,122,123,124,127];
+%}
 
-%r1 = [1,70,60,150,90,1,70,1,130];
-%r2 = [0,0,0,0,0,0,0,300,20];
-%shift = [-1.9,0.4,0.4,0.45,0.5,-0.1,0.25,0,1.29];
-csID = ['a','b','c'];
-clearvars -except goodid
-qt = {};
-taut = {};
-parfor z = 1:length(goodid)
-
-id = goodid(z);    disp(id);
-[qt{z},taut{z}] = relaxtions(id);
-end
-q = [];
-tau = [];
-
-for z = 1:length(goodid)
-    q = [q;qt{z}];
-    tau = [tau; taut{z}]; 
+parfor vid = 1:max(All(:,3))
+    path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
+    
+    fibril_ids = All(All(:,3)==vid,1);
+    
+    [drift{vid}] = motion2Drift(path,fibril_ids);
+    
 end
 
+function process_fibril(id)
+    path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
+    filename = [path 'Fibril tracks\' num2str(id) '.txt'];
+    try
+        JFilImport;
+        FourierDecompose;
+        [c] = JFilamentperpm(fxdata,fydata,relax_x,relax_y);
+        [m] = FMode2MSD(a,1);
+        [plateaus] = MSDPlateau(m);
+        [data] = fit_potential(c);
+        w = data.width;
+        s = linspace(0,Lcval,1001);
+        save([path 'Fibril data\' num2str(id) '.mat']);
+    catch
+        disp(['ERROR ON FIBRIL ' num2str(id)])
+    end
+end
 
+% 26/04
+%{
+clearvars -except T27 T29 T31 T33 T35 T37 T272 Tid
+
+for temp = 3:length(Tid)
+    disp(['On temp ' num2str(temp) ' of ' num2str(length(Tid))]);
+    this_temp = Tid{temp};
+    parfor fib = 1:length(this_temp)
+        
+        process_fibril(this_temp(fib));
+    end
+    
+end
+
+%}
+
+% old functions used for dynamics paper
+%{
 function [q,tau] = relaxtions(id)
 path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\paper 2\Fibrils\';
 load([path num2str(id) '.mat']);
@@ -244,6 +268,26 @@ w = w(r1:end-r2);
 fits = fit;
 Lp = fit.Lp(2);
 end
+
+%}
+
+% 26/04
+%{
+qt = {};
+taut = {};
+parfor z = 1:length(goodid)
+
+id = goodid(z);    disp(id);
+[qt{z},taut{z}] = relaxtions(id);
+end
+q = [];
+tau = [];
+
+for z = 1:length(goodid)
+    q = [q;qt{z}];
+    tau = [tau; taut{z}]; 
+end
+%}
 
 % 03/04
 %{

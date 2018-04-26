@@ -1,6 +1,5 @@
 clear a
 if ~(exist('Frames','var') && exist('xdata','var'))
-    disp('Extracting data...')
     JFilamentends
 end
 
@@ -17,7 +16,7 @@ nmax = 25;
 Lc = [];
 e2e = [];
 
-disp('Beginning calculations...')
+
 warning('off','all')
 for i = 1:n
     
@@ -65,5 +64,5 @@ relax_angle = relax_angle - mean(relax_angle) + mean_angle;
 [relax_x,relax_y] = move_to_com(relax_x,relax_y,mean_com);
 
 warning('on','all')
-disp('Done.')
+
 pic = 2;
