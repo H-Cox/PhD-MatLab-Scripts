@@ -9,13 +9,40 @@ goodid = [1,3,4,5,6,7,8,9,10,12,43,44,46,47,52,55,56,57,62,64,68,69,77,...
         79,80,81,84,92,94,95,118,121,122,123,124,127];
 %}
 
-parfor vid = 1:max(All(:,3))
+for temp = 1:7
+    disp(temp);
+    fibril_ids = All(All(:,2)==temp,3);
+    
+    parfor fib = 1:length(fibril_ids)
+        disp(fib)
+        [width{fib}, correctedWidth{fib}, s{fib}] = tubeWidths(fibril_ids(fib));
+    end
+    [new_cw{temp}] = groupWidths(s,correctedwidth);
+    [new_w{temp}] = groupWidths(s,width);
+    
+end
+
+function [width, correctedWidth,s] = tubeWidths(id)
+
     path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
+    filename = [path 'Fibril data\' num2str(id) '.mat'];
+    load(filename,'fxdata','fydata','relax_x','relax_y','w','Lcval');
+    width = w;
+    sdfile = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-04\26 - sd 2.mat';
+    load(sdfile,'sd','All')
     
-    fibril_ids = All(All(:,3)==vid,1);
+    video_id = All(All(:,3)==id,2);
+    drift = sd{video_id(1)}';
+    fx = HenryMethod(fxdata);
+    fy = HenryMethod(fydata);
+    fx = fx-drift(1,1:size(fx,2));
+    fy = fy-drift(2,1:size(fx,2));
     
-    [drift{vid}] = motion2Drift(path,fibril_ids);
+    c = JFilamentperpm(fx,fy,relax_x,relax_y);
     
+    [data] = fit_potential(c);
+    correctedWidth = data.width;
+    s = linspace(0,Lcval,1001);
 end
 
 function process_fibril(id)

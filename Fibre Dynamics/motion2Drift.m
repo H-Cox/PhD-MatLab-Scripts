@@ -8,10 +8,15 @@ for fib = 1:length(fibril_ids)
     
     load([path num2str(fibril_ids(fib)) '.mat'],'com')
     
-    movement_x(:,fib) = diff(com(:,1));
-    movement_y(:,fib) = diff(com(:,2));
+    mx = com(:,1)-mean(com(:,1));
+    my = com(:,2)-mean(com(:,2));
+    
+    movement_x(1:length(mx),fib) = mx;
+    movement_y(1:length(my),fib) = my;
     
 end
 
-drift = [nansum(movement_x,2), nansum(movement_y,2)];
+drift = [nanmean(movement_x,2), nanmean(movement_y,2)];
+
+
 end
