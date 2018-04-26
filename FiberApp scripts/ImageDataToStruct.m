@@ -6,8 +6,8 @@
 % remove old Images structure and initiate property variables
 %clear Images
 
-% input pixel size in nm and number of images
-pixelsize = 0.001;
+% input pixel size in um and number of images
+pixelsize = 0.13;
 numberofimages = 1;
 w = 0;% length(Images);
 % loop through all Images
