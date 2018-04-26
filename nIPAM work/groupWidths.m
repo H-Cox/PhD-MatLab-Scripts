@@ -9,12 +9,9 @@ new_widths = [];
 
 for f = 1:fibrils
     
-    s = current_s{f};
-    w = current_widths{f};
+    new_s = 0:0.1:round(max(current_s{f}),1);
     
-    new_s = 0:0.1:round(max(s),1);
-    
-    new_w = convertToNewX(s,w,new_s);
+    new_w = convertToNewX(current_s{f},current_widths{f},new_s);
     
     new_widths = [new_widths, new_w];
     

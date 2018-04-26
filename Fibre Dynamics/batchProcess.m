@@ -9,18 +9,32 @@ goodid = [1,3,4,5,6,7,8,9,10,12,43,44,46,47,52,55,56,57,62,64,68,69,77,...
         79,80,81,84,92,94,95,118,121,122,123,124,127];
 %}
 
-for temp = 1:7
-    disp(temp);
-    fibril_ids = All(All(:,2)==temp,3);
-    
-    parfor fib = 1:length(fibril_ids)
-        disp(fib)
-        [width{fib}, correctedWidth{fib}, s{fib}] = tubeWidths(fibril_ids(fib));
+for t = 1:7
+    disp(t);
+    fibril_ids = All(All(:,2)==t,1);
+    p{t} = [];
+    q{t} = [];
+    for f = 1:length(fibril_ids)
+        [tempP, tempQ] = basicImport(fibril_ids(f));
+        p{t} = [p{t}; tempP];
+        q{t} = [q{t}; tempQ];
+        
     end
-    [new_cw{temp}] = groupWidths(s,correctedwidth);
-    [new_w{temp}] = groupWidths(s,width);
+        
     
 end
+
+function [plateaus,q] = basicImport(id)
+
+    path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
+    filename = [path 'Fibril data\' num2str(id) '.mat'];
+    load(filename,'plateaus','Lcval');
+    n = 1:25;
+    q = n'.*pi()./Lcval;
+    
+    
+end
+
 
 function [width, correctedWidth,s] = tubeWidths(id)
 
@@ -28,10 +42,12 @@ function [width, correctedWidth,s] = tubeWidths(id)
     filename = [path 'Fibril data\' num2str(id) '.mat'];
     load(filename,'fxdata','fydata','relax_x','relax_y','w','Lcval');
     width = w;
+    correctedWidth = w;
+    %{
     sdfile = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-04\26 - sd 2.mat';
     load(sdfile,'sd','All')
     
-    video_id = All(All(:,3)==id,2);
+    video_id = All(All(:,1)==id,2);
     drift = sd{video_id(1)}';
     fx = HenryMethod(fxdata);
     fy = HenryMethod(fydata);
@@ -42,6 +58,7 @@ function [width, correctedWidth,s] = tubeWidths(id)
     
     [data] = fit_potential(c);
     correctedWidth = data.width;
+    %}
     s = linspace(0,Lcval,1001);
 end
 
