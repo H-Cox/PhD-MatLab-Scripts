@@ -9,7 +9,12 @@
 % input pixel size in um and number of images
 pixelsize = 0.13;
 numberofimages = 1;
-w = 0;% length(Images);
+if exist('Images','var')
+    w = length(Images);
+else
+    w = 0;
+end
+
 % loop through all Images
 for i = 1:length(imageData)
     

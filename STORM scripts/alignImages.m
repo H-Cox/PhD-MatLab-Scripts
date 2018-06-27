@@ -5,6 +5,7 @@ image2 = double(image2./max(image2(:)));
 disp('Performing initial alignment...')
 fit = fitAlignment(image1,image2);
 
+[value,fit.xyshift] = checkShift(fit.xyshift);
 displayShift(fit.xyshift)
 
 disp('Refining alignment...')
@@ -12,21 +13,29 @@ image3 = imtranslate(image2,fit.xyshift);
 fit.check = fitAlignment(image1,image3);
 fit.xyshift = fit.xyshift+fit.check.xyshift;
 count = 0;
-
-while sum(fit.check.xyshift)~=0
-    displayShift(fit.xyshift)
-    count = count + 1;
-    disp('Refining alignment...')
-    image3 = imtranslate(image2,fit.xyshift);
-    fit.check = fitAlignment(image1,image3);
-    fit.xyshift = fit.xyshift+fit.check.xyshift;
-    if count > 4
-        break;
+    
+[value,fit.xyshift] = checkShift(fit.xyshift);
+    
+if value == 0        
+    while sum(fit.check.xyshift)~=0
+        displayShift(fit.xyshift)
+        count = count + 1;
+        disp('Refining alignment...')
+        image3 = imtranslate(image2,fit.xyshift);
+        fit.check = fitAlignment(image1,image3);
+        fit.xyshift = fit.xyshift+fit.check.xyshift;
+        if count > 4
+            break;
+        end
+        [value,fit.xyshift] = checkShift(fit.xyshift);
+        if value == 1
+            break;
+        end
     end
+    disp('Alignment ok.')
+end
 end
 
-disp('Alignment ok.')
-end
 
 function fit = fitAlignment(image1,image2)
 
@@ -58,8 +67,8 @@ xFit = [imgx(:),imgy(:)];
 yFit = imgCorrelation(:);
 
 xfitMax = xFit(yFit==1,:);
-
-initialGuess = [0.5,0.5,1,1,xfitMax];
+xfitMaxM = mean(xfitMax,1);
+initialGuess = [0.5,0.5,1,1,0,0];
 
 % limit the fit size to improve accuracy
 yFit(abs(xFit(:,1))>5)=[];
@@ -80,4 +89,18 @@ yshift = shift(2);
 
 disp(['Current (x,y) shift in pixels is (' num2str(xshift) ',' num2str(yshift) ').']);
 
+end
+
+function [value,shift] = checkShift(shift)
+value = 0;
+if abs(shift(1)) > 100
+    disp('Error on x fit');
+    shift(1) = 0;
+    value = 1;
+end
+if abs(shift(2)) > 100
+    disp('Error on y fit');
+    shift(2) = 0;
+    value = 1;
+end
 end

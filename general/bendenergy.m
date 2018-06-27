@@ -1,5 +1,11 @@
 function [U,error] = bendenergy(x,y,n)
 
+% set the units used, e.g. 1e-6 == microns
+units = 1e-6;
+
+% set the intrinsic persistence length of the fibrils in metres.
+Lp = 2.5e-3;
+
 if exist('n','var') == 0
     n = 25;
 end
@@ -20,5 +26,5 @@ L = calc_Lc(xx,yy);
 
 q = (1:n).*pi()./L;
 
-U = sum((a(q<1.2).*q(q<1.2)).^2).*2.5e-3./1e-6./2;
+U = sum((a(q<1.2).*q(q<1.2)).^2).*Lp./units./2;
 end

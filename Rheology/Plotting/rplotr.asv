@@ -1,0 +1,10 @@
+function rplotr(rheologyData)
+
+rD = rheologyData;
+
+hold on;
+c = rand(3,1);
+c1 = 
+plot(rD.f,rD.g1,[RGB::random()]);
+errorbar(rD.F(:,1),rD.G1(:,1),rD.G1(:,2));
+end

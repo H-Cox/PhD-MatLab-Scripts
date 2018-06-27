@@ -51,7 +51,9 @@ end
 
 Lcfit = FitGaussianHistogram(Lc);
 Lcval = Lcfit.ci(2,2);
-
+if Lcval > max(Lc(:))
+    Lcval = max(Lc(:));
+end
 amean = mean(a,2);
 
 [relax_angle,relax_s] = modes_to_angle(amean,1000,Lcval);

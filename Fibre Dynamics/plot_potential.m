@@ -2,7 +2,7 @@ function [potential_data,xaxis,yaxis,surf_fig] = plot_potential(transverse_data,
 
 norm = 1;
 
-%[transverse_data] = sort_out_transverse_data(transverse_data);
+[transverse_data] = sort_out_transverse_data(transverse_data);
 
 [row,~] = size(transverse_data);
 

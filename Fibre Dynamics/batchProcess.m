@@ -8,30 +8,28 @@ allid = [1,3,4,5,6,7,8,9,10,11,12,13,43,44,45,46,47,52,53,54,55,56,57,...
 goodid = [1,3,4,5,6,7,8,9,10,12,43,44,46,47,52,55,56,57,62,64,68,69,77,...
         79,80,81,84,92,94,95,118,121,122,123,124,127];
 %}
+w = [];
+fibril_ids = All(All(:,2)==7,1);
 
-for t = 1:7
-    disp(t);
-    fibril_ids = All(All(:,2)==t,1);
-    p{t} = [];
-    q{t} = [];
-    for f = 1:length(fibril_ids)
-        [tempP, tempQ] = basicImport(fibril_ids(f));
-        p{t} = [p{t}; tempP];
-        q{t} = [q{t}; tempQ];
+for f = 1:length(fibril_ids)
+
+        [tempW] = basicImport(fibril_ids(f));
         
-    end
+        w = [w, tempW];
+       
+end
         
     
-end
 
-function [plateaus,q] = basicImport(id)
+
+function [correctedWidth] = basicImport(id)
 
     path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
-    filename = [path 'Fibril data\' num2str(id) '.mat'];
-    load(filename,'plateaus','Lcval');
-    n = 1:25;
-    q = n'.*pi()./Lcval;
+    filename = [path 'Fibril data 2\' num2str(id) '.mat'];
+    load(filename,'w','s','Lcval');
     
+    new_s = 0:0.05:round(Lcval,1);
+    correctedWidth = convertToNewX(s,w,new_s);
     
 end
 
@@ -42,8 +40,10 @@ function [width, correctedWidth,s] = tubeWidths(id)
     filename = [path 'Fibril data\' num2str(id) '.mat'];
     load(filename,'fxdata','fydata','relax_x','relax_y','w','Lcval');
     width = w;
-    correctedWidth = w;
-    %{
+    s = linspace(0,Lcval,1001);
+    new_s = 0:0.05:round(Lcval,1);
+    correctedWidth = convertToNewX(s,w,new_s);
+    
     sdfile = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-04\26 - sd 2.mat';
     load(sdfile,'sd','All')
     
@@ -59,13 +59,14 @@ function [width, correctedWidth,s] = tubeWidths(id)
     [data] = fit_potential(c);
     correctedWidth = data.width;
     %}
-    s = linspace(0,Lcval,1001);
+    
 end
 
 function process_fibril(id)
     path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
     filename = [path 'Fibril tracks\' num2str(id) '.txt'];
     try
+        % basic fitting
         JFilImport;
         FourierDecompose;
         [c] = JFilamentperpm(fxdata,fydata,relax_x,relax_y);
@@ -74,11 +75,56 @@ function process_fibril(id)
         [data] = fit_potential(c);
         w = data.width;
         s = linspace(0,Lcval,1001);
-        save([path 'Fibril data\' num2str(id) '.mat']);
+        
+        % normalise widths
+        new_s = 0:0.05:round(Lcval,1);
+        normalWidth = convertToNewX(s,w,new_s);
+        %{
+        % drift corrected widths
+        sdfile = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-04\26 - sd 2.mat';
+        load(sdfile,'sd','All')
+        video_id = All(All(:,1)==id,2);
+        drift = sd{video_id(1)}';
+        fx = HenryMethod(fxdata);
+        fy = HenryMethod(fydata);
+        fx = fx-drift(1,1:size(fx,2));
+        fy = fy-drift(2,1:size(fx,2));
+        c2 = JFilamentperpm(fx,fy,relax_x,relax_y);
+        [data2] = fit_potential(c2);
+        correctedWidth = data2.width;
+        normalCWidth = convertToNewX(s,correctedWidth,new_s);
+        %}
+        save([path 'Fibril data 2\' num2str(id) '.mat']);
+        
     catch
         disp(['ERROR ON FIBRIL ' num2str(id)])
     end
 end
+
+% 30/04
+%{
+for t = 2:7
+    disp(t);
+    fibril_ids = All(All(:,2)==t,1);
+    %{
+    p{t} = [];
+    q{t} = [];
+    cw{t} = [];
+    %}
+    parfor f = 1:length(fibril_ids)
+        process_fibril(fibril_ids(f));
+        %{
+        [tempP, tempQ] = basicImport(fibril_ids(f));
+        p{t} = [p{t}; tempP];
+        q{t} = [q{t}; tempQ];
+        [width, correctedWidth,s] = tubeWidths(fibril_ids(f));
+        cw{t} = [cw{t}; correctedWidth'];
+        %}
+    end
+        
+    
+end
+%}
 
 % 26/04
 %{
