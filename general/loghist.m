@@ -12,11 +12,14 @@ if in < 2
 elseif in < 3
     n = varargin{2};
 else
+    n = varargin{2};
     plotonoff = 1;
 end
 
+minX = min(X);
+maxX = max(X);
 
-edges = logspace(floor(log10(min(X))),ceil(log10(max(X))),n);
+edges = logspace(floor(log10(minX(1))),ceil(log10(maxX(1))),n);
 data(:,1) = exp(log(edges(1:end-1)) + (log(edges(2:end))-log(edges(1:end-1)))/2);
 data(:,2)= histcounts(X,edges,'Normalization','probability');
 

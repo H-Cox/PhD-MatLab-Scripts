@@ -1,4 +1,4 @@
-function [MSDdata] = processPolyParticleTracks(tr,framerate)
+function [MSDdata] = processPolyParticleTracks(tr,framerate,pixelsize)
 
 % Output array format for each track:
 %   Each output array is a table with the following columns:
@@ -17,9 +17,13 @@ if ~exist('framerate','var')
     framerate = 100;
 end
 
-MSDdata.framerate = framerate;
+if ~exist('pixelsize','var')
+    pixelsize = 0.13e-6;
+end
 
-% import track data into MSDdata.tracks
+% import data into MSDdata
+MSDdata.framerate = framerate;
+MSDdata.pixelsize = pixelsize;
 MSDdata.tr = tr;
 
 MSDdata.meanskey = {'x position','y position','frame number','particle number',...
@@ -30,11 +34,21 @@ for p = 1:length(tr)
 
     MSDdata.trackLength(p) = size(MSDdata.tr{p},1);
 
-    MSDdata.x(1:MSDdata.trackLength(p),p) = MSDdata.tr{p}(:,1);
-    MSDdata.y(1:MSDdata.trackLength(p),p) = MSDdata.tr{p}(:,2);
+    MSDdata.x(1:MSDdata.trackLength(p),p) = MSDdata.tr{p}(:,1).*pixelsize;
+    MSDdata.y(1:MSDdata.trackLength(p),p) = MSDdata.tr{p}(:,2).*pixelsize;
        
-    MSDdata.MSDs(1:MSDdata.trackLength(p),p) = simpleMSD(MSDdata.tr{p}(:,1:2));
-
+    MSDdata.MSDs(1:MSDdata.trackLength(p),p) = simpleMSD(MSDdata.tr{p}(:,1:2).*pixelsize);
+    
+    MSDdata.features(p) = basicMSDFeatures(MSDdata.MSDs(1:MSDdata.trackLength(p),p),framerate);
+    
+    MSDdata.alphas(p) = MSDdata.features(p).alpha;
+    MSDdata.rHs(p,1:2) = MSDdata.features(p).hydrodynamicRadius;
+    
+    if MSDdata.rHs(p,2)/MSDdata.rHs(p,1)<0.3 && MSDdata.rHs(p,2)/MSDdata.rHs(p,1)>0
+        MSDdata.goodRH(p) = 1;
+    else
+        MSDdata.goodRH(p) = 0;
+    end
 end
 
 MSDdata.x = HenryMethod(MSDdata.x);
@@ -50,16 +64,9 @@ MSDdata.area = (max(MSDdata.x)-min(MSDdata.x))...
     .*(max(MSDdata.y)-min(MSDdata.y));
 
 MSDdata.meanMSD = nanmean(MSDdata.MSDs,2);
-MSDdata.meanMSDfeatures = MSD_features(MSDdata.meanMSD',framerate);
-
-try
-    MSDdata.MSDfeatures = MSD_features(MSDdata.MSDs,framerate);
-catch
-    disp('could not extract detailed features');
+MSDdata.stdMSD = nanstd(MSDdata.MSDs,0,2);
+MSDdata.meanMSDfeatures = MSDFeatures(MSDdata.meanMSD',framerate);
 end
 
-end
-
-% calcualte alpha for each MSD and put into MSD.alpha
 
 

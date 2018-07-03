@@ -13,7 +13,7 @@ for f = 1:length(l)
         [data] = loghist(MSD(l(f),:),10);
         fit(f) = FitGaussian(log10(data(:,1)),data(:,2));
         mean_MSD(f) = 10^(fit(f).xo(2,1));
-        mean_error(f) = 10^mean_MSD(f)*log(10)*fit(f).xo(2,2);
+        mean_error(f) = mean_MSD(f)*log(10)*fit(f).xo(2,2);
     catch
         mean_MSD(f) = NaN;
         mean_error(f) = NaN;
