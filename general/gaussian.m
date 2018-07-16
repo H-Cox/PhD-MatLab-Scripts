@@ -1,4 +1,13 @@
+function [y]=gaussian1D(x,mean,sigma,constant)
 
-function [y]=gaussian(x,const,mean,sigma)
+n = size(x, 2);
+xmu = bsxfun(@minus,x,mean);
 
-y = const.*exp(-((x-mean).^2)./(2*sigma.^2));
+
+if ~exist('constant','var')
+    y = 1 / sqrt((2*pi)^n * det(sigma)) .* exp(-1/2 * sum(xmu/sigma .* xmu, 2));
+else
+    y = constant .* exp(-1/2 * sum(xmu/sigma .* xmu, 2));
+end
+
+end

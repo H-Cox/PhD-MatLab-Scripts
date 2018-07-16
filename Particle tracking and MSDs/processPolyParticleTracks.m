@@ -42,7 +42,7 @@ for p = 1:length(tr)
     MSDdata.features(p) = basicMSDFeatures(MSDdata.MSDs(1:MSDdata.trackLength(p),p),framerate);
     
     MSDdata.alphas(p) = MSDdata.features(p).alpha;
-    MSDdata.rHs(p,1:2) = MSDdata.features(p).hydrodynamicRadius;
+    MSDdata.rHs(p,1:2) = MSDdata.features(p).hydrodynamicRadius(1,:);
     
     if MSDdata.rHs(p,2)/MSDdata.rHs(p,1)<0.3 && MSDdata.rHs(p,2)/MSDdata.rHs(p,1)>0
         MSDdata.goodRH(p) = 1;

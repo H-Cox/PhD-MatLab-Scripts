@@ -54,10 +54,10 @@ errors = sqrt(diag(CovB));
 % format for output
 xo = [beta',errors];
 
-if size(x,2) > 1
+if size(x,2) > 1000
     fit.x = x;
 else
-    fit.x = linspace(min(x),max(x),max([1000,length(x)]));
+    fit.x = linspace(0,max(x),max([1000,length(x)]));
 end
 
 % calculate resulting yfit

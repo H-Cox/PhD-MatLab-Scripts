@@ -16,21 +16,28 @@ xU = [];
 % loop through all images and fibrils
 for i = 1:length(Images)
     disp(['Image ' num2str(i)]);
+    
+    if isempty(Images(i).xy_nm)
+        Images(i).xy_nm = Images(i).xy;
+    end
+    
     ixy = Images(i).xy_nm;
     clear iend2end icurvature iLp iU ie
     for j = 1:length(Images(i).xy_nm)
-
+        Images(i).xy_nm{j} = Images(i).xy_nm{j};
         % extract x y co-ordinates of fibril
         xpts = ixy{j}(1,:);
         ypts = ixy{j}(2,:);
         pts = [xpts', ypts'];
         Lc = calc_Lc(xpts,ypts);
+        Images(i).length_nm(j) = Lc;
+        
         % calculate end to end distance for the fibril
         iend2end(j) = sqrt((xpts(1)-xpts(end)).^2+(ypts(1)-ypts(end)).^2);
         
         % calculate persistence length using curvature from fibril
-        [Lp,k] = LpCurvature(xpts,ypts);
-        icurvature{j} = k;
+        %[Lp,k] = LpCurvature(xpts,ypts);
+        %icurvature{j} = k;
         %iLp(j) = singleFibrilE2E(ixy{j},500);
         if  Lc > 8000
             xlen = length(xpts);
@@ -48,7 +55,7 @@ for i = 1:length(Images)
     end
     
 
-    Images(i).curvature = icurvature;
+%    Images(i).curvature = icurvature;
     Images(i).end2end = iend2end;
     %Images(i).Lp = iLp;
     Images(i).U = iU;
