@@ -71,10 +71,10 @@ xfitMaxM = mean(xfitMax,1);
 initialGuess = [0.5,0.5,1,1,0,0];
 
 % limit the fit size to improve accuracy
-yFit(abs(xFit(:,1))>5)=[];
-xFit(abs(xFit(:,1))>5,:)=[];
-yFit(abs(xFit(:,2))>5)=[];
-xFit(abs(xFit(:,2))>5,:)=[];
+yFit(abs(xFit(:,1))>10)=[];
+xFit(abs(xFit(:,1))>10,:)=[];
+yFit(abs(xFit(:,2))>10)=[];
+xFit(abs(xFit(:,2))>10,:)=[];
 
 fit = nlinfit2(xFit,yFit,gauss2D,initialGuess);
 

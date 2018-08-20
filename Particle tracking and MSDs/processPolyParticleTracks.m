@@ -44,7 +44,7 @@ for p = 1:length(tr)
     MSDdata.alphas(p) = MSDdata.features(p).alpha;
     MSDdata.rHs(p,1:2) = MSDdata.features(p).hydrodynamicRadius(1,:);
     
-    if MSDdata.rHs(p,2)/MSDdata.rHs(p,1)<0.3 && MSDdata.rHs(p,2)/MSDdata.rHs(p,1)>0
+    if MSDdata.MSDs(6,p) > 4e-14% && MSDdata.rHs(p,2)/MSDdata.rHs(p,1)<0.3 && MSDdata.rHs(p,2)/MSDdata.rHs(p,1)>0
         MSDdata.goodRH(p) = 1;
     else
         MSDdata.goodRH(p) = 0;
@@ -66,6 +66,12 @@ MSDdata.area = (max(MSDdata.x)-min(MSDdata.x))...
 MSDdata.meanMSD = nanmean(MSDdata.MSDs,2);
 MSDdata.stdMSD = nanstd(MSDdata.MSDs,0,2);
 MSDdata.meanMSDfeatures = MSDFeatures(MSDdata.meanMSD',framerate);
+
+MSDdata.goodMSDs=MSDdata.MSDs(:,MSDdata.goodRH==1);
+
+MSDdata.goodMeanMSD = nanmean(MSDdata.goodMSDs,2);
+MSDdata.goodStdMSD = nanstd(MSDdata.goodMSDs,0,2);
+MSDdata.goodMeanMSDfeatures = MSDFeatures(MSDdata.goodMeanMSD',framerate);
 end
 
 

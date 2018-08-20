@@ -25,7 +25,7 @@ a = modefit.an;
 L = calc_Lc(xx,yy);
 
 q = (1:n).*pi()./L;
-if q(1) > 100000000
+if q(1) >= 1.2
     U = ((a(1).*q(1)).^2).*Lp./units./2;
 else
     U = sum((a(q<1.2).*q(q<1.2)).^2).*Lp./units./2;

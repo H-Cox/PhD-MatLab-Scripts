@@ -1,10 +1,12 @@
 function plotMSDs(MSDdata)
 
-figure;
+MSDs = MSDdata.MSDs(:,MSDdata.goodRH==1);
 
-tau = taugen(100,size(MSDdata.MSDs,1));
+%figure;
+
+tau = taugen(100,size(MSDs,1));
 hold on;
-loglog(tau,MSDdata.MSDs','Color',[128,191,255]./255,'LineWidth',1);
+loglog(tau,MSDs','Color',[128,191,255]./255,'LineWidth',1);
 
 hold on;
 

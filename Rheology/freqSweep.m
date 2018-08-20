@@ -47,5 +47,5 @@ end
 function [processedData, rawData] = splitAndAverage(longRawData,newSize)
 
 rawData = reshape(longRawData,newSize);
-processedData = [mean(rawData,2), std(rawData,0,2)./sqrt(newSize(2))];
+processedData = [mean(rawData,2), std(rawData,0,2)];%./sqrt(newSize(2))];
 end
