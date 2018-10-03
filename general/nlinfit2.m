@@ -57,8 +57,8 @@ xo = [beta',errors];
 if size(x,2) > 1000
     fit.x = x;
 elseif min(size(x))== 1
-    %fit.x = linspace(min(x),max(x),max([1000,length(x)]));
-    fit.x = linspace(min(x),5000,max([1000,length(x)]));
+    fit.x = linspace(min(x),max(x),max([1000,length(x)]));
+    %fit.x = linspace(min(x),5000,max([1000,length(x)]));
 else fit.x = x;
 end
 

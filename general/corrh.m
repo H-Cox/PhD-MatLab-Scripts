@@ -1,9 +1,13 @@
-function G = corrh(x,y)
+function G = corrh(x,y,dim)
 
-Exy = nanmean(x.*y,2);
+if ~exist('dim','var')
+    dim = 1;
+end
 
-covxy = Exy-nanmean(x,2).*nanmean(y,2);
+Exy = nanmean(x.*y,1);
 
-G = covxy./(nanstd(x,0,2).*nanstd(y,0,2));
+covxy = Exy-nanmean(x,1).*nanmean(y,1);
+
+G = covxy./(nanstd(x,0,1).*nanstd(y,0,1));
 
 end

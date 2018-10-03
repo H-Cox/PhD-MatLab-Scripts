@@ -53,17 +53,13 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % now reverse the calculation to generate the tangent angles to evaluate
 % the fitting
-% Theta(s) = sum(Thetan(s))
-% Thetan(s) = sqrt(2/L)*an*cos(n*pi*s/L)
-
-% calculate pi*s/L
-%incos2 = pi().*s./L;
 incos2 = pi().*linspace(0,1,length(tangent));
 nvals = 1:n;
 
-% calculate new tangent, Theta
+% calculate new tangent, Theta and curvature.
 for i = 1:length(incos2)
     Theta(i) = sqrt(2/L)*sum(an.*cos(nvals.*incos2(i)));
+    Curvature(i) = sqrt(2/L)*sum(an.*nvals.*(pi()/L).*sin(nvals.*incos2(i)));
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,6 +69,7 @@ modefit.L = L;
 modefit.s = s;
 modefit.tangents = tangent;
 modefit.Theta = Theta';
+modefit.Curvature = Curvature';
 modefit.smid = smid;
 modefit.error = FindError(tangent,Theta);
 end

@@ -61,24 +61,24 @@ y = (-(ysize-1)/2:(ysize-1)/2);
 imgx = repmat(x,[ysize,1]);
 imgy = repmat(y',[1,xsize]);
 
-gauss2D = @(b,x)(b(1).*exp(-(x(:,1)-b(5)).^2./b(3))+b(2).*exp(-(x(:,2)-b(6)).^2./b(4)));
+gauss2D = @(b,x)(b(1).*exp(-((x(:,1)-b(2)).^2./b(4)+(x(:,2)-b(3)).^2./b(5))));
 
 xFit = [imgx(:),imgy(:)];
 yFit = imgCorrelation(:);
 
 xfitMax = xFit(yFit==1,:);
 xfitMaxM = mean(xfitMax,1);
-initialGuess = [0.5,0.5,1,1,0,0];
+initialGuess = [1,0,0,1,1];
 
 % limit the fit size to improve accuracy
-yFit(abs(xFit(:,1))>10)=[];
-xFit(abs(xFit(:,1))>10,:)=[];
-yFit(abs(xFit(:,2))>10)=[];
-xFit(abs(xFit(:,2))>10,:)=[];
+yFit(abs(xFit(:,1))>20)=[];
+xFit(abs(xFit(:,1))>20,:)=[];
+yFit(abs(xFit(:,2))>20)=[];
+xFit(abs(xFit(:,2))>20,:)=[];
 
 fit = nlinfit2(xFit,yFit,gauss2D,initialGuess);
 
-fit.xyshift = round(fit.xo(5:6,1).*sF);
+fit.xyshift = round(fit.xo(2:3,1).*sF);
 
 end
 
