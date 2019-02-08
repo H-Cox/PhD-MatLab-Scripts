@@ -94,6 +94,8 @@ end
 % x co-ordinates for fitting
 xfit = linspace(-lslice,lslice,n);
 
+gaussFunc = @(b,x)(b(1).*exp(-0.5*((b(2)-x)./b(3)).^2));
+
 % loop through each slice and fit a gaussian
 for k = 1:length(vals)/n
     
@@ -102,9 +104,9 @@ for k = 1:length(vals)/n
     pixels = pixels./max(pixels(:));
     
     % fit the gaussian and record mean and sigma
-	f(k) = ezfit(xfit,pixels,'gauss');
-	means(k) = f(k).m(3);
-	width(k) = f(k).m(2);
+	f(k) = nlinfit2(xfit,pixels,gaussFunc);
+	means(k) = f(k).xo(2,1);
+	width(k) = f(k).xo(3,1);
     
     % convert to x and y co-ordinates
     xPP(k,1) = xpts(k)+means(k)*cos(normal(k));
@@ -114,7 +116,7 @@ for k = 1:length(vals)/n
         hold on;
         plot(xfit,pixels);
         hold on;
-        plot(xfit,f(k).m(1).*exp(-((xfit-f(k).m(3)).^2)./(2*f(k).m(2).^2)));
+        plot(f(k).x,f(k).yfit);
     end
 end
 

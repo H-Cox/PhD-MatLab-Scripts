@@ -1,24 +1,27 @@
-function [ processedData] = freqSweep( rawData )
+function [ processedData] = freqSweep( varargin )
 %Creates a structure from the frequency sweep data of the rheomoeter
 
+if length(varargin) == 1
+    
+    rawData = varargin{1};
 
-f=rawData(:,3);
+    f=rawData(:,3);
 
-% find the number of repeats
-df = f-f(1);
-repeats = length(df(df==0));
-datapoints = length(f);
+    % find the number of repeats
+    df = f-f(1);
+    repeats = length(df(df==0));
+    datapoints = length(f);
 
-newSize = [datapoints/repeats,repeats];
+    newSize = [datapoints/repeats,repeats];
 
-[pD.F,pD.f] = splitAndAverage(rawData(:,3),newSize);
-[pD.G,pD.g] = splitAndAverage(rawData(:,4),newSize);
-[pD.G1,pD.g1] = splitAndAverage(rawData(:,5),newSize);
-[pD.G2,pD.g2] = splitAndAverage(rawData(:,6),newSize);
-[pD.Visc,pD.visc] = splitAndAverage(rawData(:,7),newSize);
-[pD.Phase,pD.phase] = splitAndAverage(rawData(:,8),newSize);
-[pD.SS,pD.ss] = splitAndAverage(rawData(:,9),newSize);
-[pD.SN,pD.sn] = splitAndAverage(rawData(:,10),newSize);
+    [pD.F,pD.f] = splitAndAverage(rawData(:,3),newSize);
+    [pD.G,pD.g] = splitAndAverage(rawData(:,4),newSize);
+    [pD.G1,pD.g1] = splitAndAverage(rawData(:,5),newSize);
+    [pD.G2,pD.g2] = splitAndAverage(rawData(:,6),newSize);
+    [pD.Visc,pD.visc] = splitAndAverage(rawData(:,7),newSize);
+    [pD.Phase,pD.phase] = splitAndAverage(rawData(:,8),newSize);
+    [pD.SS,pD.ss] = splitAndAverage(rawData(:,9),newSize);
+    [pD.SN,pD.sn] = splitAndAverage(rawData(:,10),newSize);
 
 %{
 f = reshape(rawData(:,3),newSize);
@@ -40,8 +43,18 @@ Stress = [mean(stress,2), std(stress,0,2)./sqrt(repeats)];
 Strain = [mean(strain,2), std(strain,0,2)./sqrt(repeats)];
 %}
 
-processedData = pD;
+    processedData = pD;
 
+else
+    
+    for d = 1:length(varargin)
+        
+        pD{d} = freqSweep(varargin{d});
+        
+    end
+    
+    processedData = combineFSweep(pD{:});
+end
 end
 
 function [processedData, rawData] = splitAndAverage(longRawData,newSize)

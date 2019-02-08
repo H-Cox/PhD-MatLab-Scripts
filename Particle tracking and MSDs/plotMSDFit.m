@@ -1,4 +1,4 @@
-function plotMSDFit(MSDData)
+function [taufit,yfit,tauraw,yraw] = plotMSDFit(MSDData)
 
 hold on; %figure;
 
@@ -13,4 +13,11 @@ plot(x2,yfit);
 set(gca, 'YScale', 'log')
 set(gca, 'XScale', 'log')
 
+tau = x2;
+yraw = MSDData.meanMSD;
+
+yfit = yfit(tau<=1)';
+yraw = yraw(x<=1);
+taufit = tau(tau<=1)';
+tauraw = x(x<=1)';
 end

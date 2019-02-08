@@ -1,24 +1,26 @@
 % Non-linear fitting with errors and no need for initial guess. Inputs are
 % x, y and modelfun. Optional additional inputs are the guess vector.
 % written by Henry Cox 27/10/17
-function [fit] = nlinfit2(varargin)
+function [fit] = nlinfit2(x,y,modelfun,guess,xlims,ylims,makeX)
 
-% import x and y data to be fit
-x = varargin{1};
-y = varargin{2};
+original_X = x;
+original_Y = y;
+
+if exist('xlims','var') 
+    [x,y] = stripX(x,y,xlims);
+end
+
+if exist('ylims','var') 
+    [y,x] = stripX(y,x,ylims);
+end
 
 % make sure the size is the same (both should be 1D vectors)
 if size(x) ~= size(y)
     y = y';
 end
 
-% import function to be fit to data
-modelfun = varargin{3};
-
-% if initial guess is input then use it
-if length(varargin)==4
-    guess = varargin{4};
-else
+% if initial guess is not input then guess it
+if ~exist('guess','var')
     % estimate initial guess
     guess = [1];
     
@@ -54,12 +56,10 @@ errors = sqrt(diag(CovB));
 % format for output
 xo = [beta',errors];
 
-if size(x,2) > 1000
-    fit.x = x;
-elseif min(size(x))== 1
-    fit.x = linspace(min(x),max(x),max([1000,length(x)]));
-    %fit.x = linspace(min(x),5000,max([1000,length(x)]));
-else fit.x = x;
+if ~exist('makeX','var')
+    fit.x = original_X;
+else
+    fit.x = linspace(min(original_X),max(original_X),max([1000,length(original_X)]));
 end
 
 % calculate resulting yfit

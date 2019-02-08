@@ -3,11 +3,11 @@
 function [fit] = FitGaussian(x,y)
 
 % define gaussian function
-modelfun = @(b,x)(b(1).*exp(-(x-b(2)).^2./(2.*b(3).^2)));
+modelfun = @(b,x)(returnGaussian(x,b(1),abs(b(2))));
 
 % estimate initial guess
 max_x = x(y==max(y));
-guess = [max(y),mean(max_x),std(x)];
+guess = [mean(max_x),std(x)];
 
 % perform fitting
 [beta,R,J,CovB,MSE,ErrorModelInfo] = nlinfit(x,y,modelfun,guess);
@@ -35,4 +35,11 @@ fit.MSE = MSE;
 fit.ci = ci;
 fit.x = xt;
 fit.y = yt;
+end
+
+function [values] = returnGaussian(x,mean,sigma)
+
+gaus = makedist('Normal','mu',mean,'sigma',sigma);
+values = pdf(gaus,x);
+
 end

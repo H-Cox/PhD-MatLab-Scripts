@@ -30,7 +30,7 @@ for r = 1:row
     out_data(r,:) = temp;
 end
 
-bins = bins(1:end-1) + diff(bins(1:2));
+bins = bins(1:end-1) + diff(bins(1:2))/2;
 
 if plotonoff == 1
     surf(out_data)

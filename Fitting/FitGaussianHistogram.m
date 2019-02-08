@@ -11,12 +11,12 @@ function [fit] = FitGaussianHistogram(varargin)
 if length(varargin) == 1
     
     % if only data supplied do a histogram as normal
-    [counts,bins] = histcounts(varargin{1},'Normalization','probability');
+    [counts,bins] = histcounts(varargin{1},'Normalization','pdf');
 
 else
  
     % find the counts and bins    
-    [counts,bins] = histcounts(varargin{1},varargin{2},'Normalization','probability');
+    [counts,bins] = histcounts(varargin{1},varargin{2},'Normalization','pdf');
 
 end  
 

@@ -2,13 +2,16 @@ function [potential_data,xaxis,yaxis,surf_fig] = plot_potential(transverse_data,
 
 norm = 1;
 
-[transverse_data] = sort_out_transverse_data(transverse_data);
+%[transverse_data] = sort_out_transverse_data(transverse_data);
 
 [row,~] = size(transverse_data);
 
 xaxis = linspace(0,Lc,row);
 
-[PDF_data,bins] = Histogram2D(transverse_data,100,0);
+yaxis = -0.501:0.002:0.501;
+%yaxis = linspace(-0.51,0.51,103);
+
+[PDF_data,bins] = Histogram2D(transverse_data,yaxis,0);
 
 yaxis = bins;
 
@@ -66,7 +69,7 @@ function [surf_fig] = do_the_plotting(yaxis,xaxis,potential_data)
     hold(axes1,'on');
 
     surf(yaxis,xaxis,potential_data,'Edgecolor','None');
-
+    
     view([90 -90]);
     colorbar
     axis tight
@@ -76,6 +79,7 @@ function [surf_fig] = do_the_plotting(yaxis,xaxis,potential_data)
     set(axes1,'FontSize',20);
     pos = get(surf_fig,'position');
     set(surf_fig,'position',[pos(1:2)/4 pos(3)*3 pos(4)*2])
+    xlim([-0.5,0.5]);
 end
 
 function [colourmapping] = generate_surface_colors(potential_data)

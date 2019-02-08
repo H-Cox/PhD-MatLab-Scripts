@@ -1,4 +1,4 @@
-%{ 
+%{
 %Id numbers for various groups of fibrils from initial dynamics paper
 freeID = [106,107,108,109,110,111,113,114,117];
 
@@ -8,78 +8,324 @@ allid = [1,3,4,5,6,7,8,9,10,11,12,13,43,44,45,46,47,52,53,54,55,56,57,...
 goodid = [1,3,4,5,6,7,8,9,10,12,43,44,46,47,52,55,56,57,62,64,68,69,77,...
         79,80,81,84,92,94,95,118,121,122,123,124,127];
 %}
-w = [];
-fibril_ids = All(All(:,2)==7,1);
 
-for f = 1:length(fibril_ids)
 
-        [tempW] = basicImport(fibril_ids(f));
+%{
+I3K/pNIPAM
+18-05-17
+1.1 cold - id = [1,2,4,5,6,7,8,9,10,11,12];
+1.2 cold - id = [1,2,3,4,5,6,7,9,10,11,12,13,14,15];
+1.3 cold - id = [1,2,4,5,6,7,9,10,11,12,13,15];
+1.4 cold - id = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+18-05-19
+1.1 hot - id = [1,2,3,4,6,7,8,9,10,11,13];
+1.2 hot - id = [1,2,3,4,5,6,7,8,9,10];
+1.3 hot - id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+1.4 hot - id = [1,2,4,5,6,7,8,9,10,11,12];
+18-05-31
+3.1 cold - id = [1,3,4,5,6,7,8,9,10,12,13,14];
+3.2 cold - id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+3.3 cold - id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,19];
+3.4 cold - id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+3.1 hot - id = [1,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+3.2 hot - id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+3.3 hot - id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28];
+3.4 hot - id = [1,2,3,4,5,6,7,8,9,10,11,13,15,18];
+
+%}
+%clear all
+
+savenames = {'0p cold';
+    '1p cold';
+    '8p cold';
+    '64p cold';
+    '0p hot';
+    '1p hot';
+    '8p hot';
+    '64p hot';
+    };
+
+savepath = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-11\22 - ';
+
+bins = 0:0.1:30;
+x = bins(1:end-1)+0.05;
+
+acounts = zeros([8,length(x)]);
+
+tDistFit = @(b,x)(tDist(x,b(1),b(2),b(3)));
+
+ 
+for s = 1:8
+    
+    filename = [savepath savenames{s}];
+    
+    load(filename,'allNdc');
+    
+    ndc = [];
+    
+    for n = 1:length(allNdc)
         
-        w = [w, tempW];
-       
+        ndc = [ndc; allNdc{n}(:)];
+        
+    end
+    
+    [acounts(s,:), ~] = histcounts(abs(ndc),bins,'Normalization','pdf');
+    
+    %afitT(s) = nlinfit2(x,counts(s,:),tDistFit,[0,1,1]);
+    %afitN(s) = FitGaussianHistogram(ndc,bins);
+    
+    
 end
+
+
+% 23/11/18
+%{
+
+ID = {[1,2,4,5,6,7,8,9,10,11,12];
+    [1,2,3,4,5,6,7,9,10,11,12,13,14,15];
+    [1,2,4,5,6,7,9,10,11,12,13,15];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13];
+    
+    [1,2,3,4,6,7,8,9,10,13];
+    [1,2,3,4,5,6,7,8,9,10];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+    [1,2,4,5,6,7,8,9,10,11,12];
+    
+    [1,3,4,5,6,7,8,9,10,12,13,14];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,19];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+    
+    [1,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+    [1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28];
+    [1,2,3,4,5,6,7,8,9,10,11,13,15,18];
+    };
+
+modeID = {[1,4,5,8,9,11];
+    [1,2,3,4,5,6,7,9,10,13,14];
+    [1,2,5,6,7,9,10,11,12,13,15];
+    [2,3,4,5,7,8,9,10,12];
+    
+    [1,2,3,4,6,7,8,9,10,13];
+    [1,2,3,4,5,6,7,8,9,10];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+    [1,2,4,5,6,7,8,9,10,11,12];
+    
+    [1,4,9,12,13,14];
+    [1,3,5,6,8,10,11,12,13,14,15,16,17];
+    [1,2,3,5,10,11,12,13,14,16,17,19];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18];
+    
+    [1,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+    [1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28];
+    [1,2,3,4,5,6,7,8,9,10,11,13,15,18];
+    };
+
+names = {'Cold vids\18-05-17 1.1\';
+    'Cold vids\18-05-17 1.2\';
+    'Cold vids\18-05-17 1.3\';
+    'Cold vids\18-05-17 1.4\';
+    
+    'Hot vids\18-05-19 1.1\';
+    'Hot vids\18-05-19 1.2\';
+    'Hot vids\18-05-19 1.3\';
+    'Hot vids\18-05-19 1.4\';
+    
+    'Cold vids\18-05-31 3.1\';
+    'Cold vids\18-05-31 3.2\';
+    'Cold vids\18-05-31 3.3\';
+    'Cold vids\18-05-31 3.4\';
+    
+    'Hot vids\18-05-31 3.1\';
+    'Hot vids\18-05-31 3.2\';
+    'Hot vids\18-05-31 3.3\';
+    'Hot vids\18-05-31 3.4\';
+    };
+
+savenames = {'0p cold';
+    '1p cold';
+    '8p cold';
+    '64p cold';
+    '0p hot';
+    '1p hot';
+    '8p hot';
+    '64p hot';
+    };
+
+homepath = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
+savepath = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-11\22 - ';
+for s = 1:length(savenames)
+    
+    fibril_ids1 = modeID{s};
+    fibril_ids2 = modeID{s+8};
+    
+    samplepath1 = names{s};
+    samplepath2 = names{s+8};
+      
+    path = [homepath samplepath1];
+    disp(path);
+    allNdc = cell([1,length(fibril_ids1)+length(fibril_ids2)]);
+    data = cell([1,length(fibril_ids1)+length(fibril_ids2)]);
+    parfor f = 1:length(fibril_ids1)
+        disp(['Fibril number ' num2str(f) ', id ' num2str(fibril_ids1(f))]);
+        [output,ndc] = getVelocityCDF(fibril_ids1(f),path);
         
+        data{f} = output;
+        allNdc{f} = ndc;
+        
+    end
+    lf1 = length(fibril_ids1);
+    path = [homepath samplepath2];
+    disp(path);
+    parfor f = 1:length(fibril_ids2)
+        
+        disp(['Fibril number ' num2str(f) ', id ' num2str(fibril_ids2(f))]);
+        [output,ndc] = getVelocityCDF(fibril_ids2(f),path);
+        
+        data{f+lf1} = output;
+        allNdc{f+lf1} = ndc;
+        
+    end
     
+    savefile = [savepath savenames{s} '.mat'];
+    
+    dataStruct = [data{:}];
+    
+    save(savefile,'data','allNdc','dataStruct');
+    
+    clear data allNdc dataStruct
+    
+end
+
+function [cdfData,ndc] = getVelocityCDF(id,path)
+
+    filename = [path 'fibril' num2str(id) '.mat'];
+    load(filename,'c2','Lcval','s','new_s');
+    
+    disp(['Working on ' num2str(id)]);
+    
+    nc = convertToNewX2D(s,c2,new_s);
+    
+    disp(['Converted ' num2str(id)]);
+    
+    ndc = diff(nc')'./0.01;
+    
+    [cd, xvals] = ecdf(ndc(:));
+    
+    [acd, ax] = ecdf(abs(ndc(:)));
+    
+    cdfData.cdf = cd;
+    cdfData.xcdf = xvals;
+    cdfData.abscdf = acd;
+    cdfData.absx = ax;
+
+end
 
 
-function [correctedWidth] = basicImport(id)
 
-    path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
-    filename = [path 'Fibril data 2\' num2str(id) '.mat'];
-    load(filename,'w','s','Lcval');
+function importAndSavePotential(id, path, savepath, number)
+try
+    filename = [path 'fibril' num2str(id) '.mat'];
+    load(filename,'c2','Lcval');
+    if ~exist('c2','var')
+        disp(['Correcting fibril ' num2str(id)]);
+        correctFibrilWidths(id, path)
+        load(filename,'c2','Lcval');
+    end
+    [~,~,~,surf_fig] = plot_potential(c2,Lcval);
+    saveas(surf_fig,[savepath '-' num2str(number) '-' num2str(id) '.jpg'],'jpg');
+    close all
+catch
+    disp(['Error on fibril ' num2str(id)]);
+end
+end
+
+
+
+function correctWidths(id, path)
+try
+    filename = [path 'fibril' num2str(id) '.mat'];
+    load(filename);
     
-    new_s = 0:0.05:round(Lcval,1);
-    correctedWidth = convertToNewX(s,w,new_s);
+    fx = HenryMethod(fxdata);
+    fy = HenryMethod(fydata);
     
+    [fx,fy] = correctFxFy(fx,fy);
+    
+    c2 = JFilamentperpm(fx,fy,relax_x,relax_y);
+    [data] = fit_potential(c2);
+    w = data.width;
+    [~,~,~,surf_fig] = plot_potential(c2,Lcval);
+    saveas(surf_fig,[path 'fig_' num2str(id) '_2.jpg'],'jpg');
+    close all
+    save([path 'fibril' num2str(id) '.mat']);
+catch
+    disp(['ERROR ON FIBRIL ' num2str(id)])
+    close all
+end
+end
+
+function [output] = basicImport(id,path)
+
+filename = [path 'fibril' num2str(id) '.mat'];
+load(filename,'plateaus','Lcval','nmax');
+
+q = (1:nmax).*pi()./Lcval;
+
+output = [q', plateaus];
+
+
 end
 
 
 function [width, correctedWidth,s] = tubeWidths(id)
 
-    path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
-    filename = [path 'Fibril data\' num2str(id) '.mat'];
-    load(filename,'fxdata','fydata','relax_x','relax_y','w','Lcval');
-    width = w;
-    s = linspace(0,Lcval,1001);
-    new_s = 0:0.05:round(Lcval,1);
-    correctedWidth = convertToNewX(s,w,new_s);
-    
-    sdfile = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-04\26 - sd 2.mat';
-    load(sdfile,'sd','All')
-    
-    video_id = All(All(:,1)==id,2);
-    drift = sd{video_id(1)}';
-    fx = HenryMethod(fxdata);
-    fy = HenryMethod(fydata);
-    fx = fx-drift(1,1:size(fx,2));
-    fy = fy-drift(2,1:size(fx,2));
-    
-    c = JFilamentperpm(fx,fy,relax_x,relax_y);
-    
-    [data] = fit_potential(c);
-    correctedWidth = data.width;
-    %}
-    
+path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
+filename = [path 'Fibril data\' num2str(id) '.mat'];
+load(filename,'fxdata','fydata','relax_x','relax_y','w','Lcval');
+width = w;
+s = linspace(0,Lcval,1001);
+new_s = 0:0.05:round(Lcval,1);
+correctedWidth = convertToNewX(s,w,new_s);
+
+sdfile = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-04\26 - sd 2.mat';
+load(sdfile,'sd','All')
+
+video_id = All(All(:,1)==id,2);
+drift = sd{video_id(1)}';
+fx = HenryMethod(fxdata);
+fy = HenryMethod(fydata);
+fx = fx-drift(1,1:size(fx,2));
+fy = fy-drift(2,1:size(fx,2));
+
+c = JFilamentperpm(fx,fy,relax_x,relax_y);
+
+[data] = fit_potential(c);
+correctedWidth = data.width;
+
+
 end
 
 function process_fibril(id)
-    path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
-    filename = [path 'Fibril tracks\' num2str(id) '.txt'];
-    try
-        % basic fitting
-        JFilImport;
-        FourierDecompose;
-        [c] = JFilamentperpm(fxdata,fydata,relax_x,relax_y);
-        [m] = FMode2MSD(a,1);
-        [plateaus] = MSDPlateau(m);
-        [data] = fit_potential(c);
-        w = data.width;
-        s = linspace(0,Lcval,1001);
-        
-        % normalise widths
-        new_s = 0:0.05:round(Lcval,1);
-        normalWidth = convertToNewX(s,w,new_s);
-        %{
+path = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\Hot vids\18-05-31 3.4\';
+filename = [path 's' num2str(id) '.txt'];
+try
+    % basic fitting
+    JFilImport;
+    FourierDecompose;
+    [c] = JFilamentperpm(fxdata,fydata,relax_x,relax_y);
+    [m] = FMode2MSD(a,1);
+    [plateaus] = MSDPlateau(m);
+    [data] = fit_potential(c);
+    w = data.width;
+    s = linspace(0,Lcval,1001);
+    
+    % normalise widths
+    new_s = 0:0.05:round(Lcval,1);
+    normalWidth = convertToNewX(s,w,new_s);
+    %{
         % drift corrected widths
         sdfile = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\MATLAB\18-04\26 - sd 2.mat';
         load(sdfile,'sd','All')
@@ -93,33 +339,155 @@ function process_fibril(id)
         [data2] = fit_potential(c2);
         correctedWidth = data2.width;
         normalCWidth = convertToNewX(s,correctedWidth,new_s);
-        %}
-        save([path 'Fibril data 2\' num2str(id) '.mat']);
-        
-    catch
-        disp(['ERROR ON FIBRIL ' num2str(id)])
-    end
+    %}
+    save([path 'fibril' num2str(id) '.mat']);
+    
+catch
+    disp(['ERROR ON FIBRIL ' num2str(id)])
 end
+end
+%}
+
+
+% 22/11/18
+
+%{
+
+for s = 1%length(savenames)
+    
+    fibril_ids1 = modeID{s};
+    fibril_ids2 = modeID{s+8};
+    
+    samplepath1 = names{s};
+    samplepath2 = names{s+8};
+      
+    path = [homepath samplepath1];
+    disp(path);
+    figure;
+    data = [];
+    for f = 1:length(fibril_ids1)
+        disp(['Fibril number ' num2str(f) ', id ' num2str(fibril_ids1(f))]);
+        [output] = basicImport(fibril_ids1(f),path);
+        hold on;
+        plot(output(:,1),output(:,2),'.');
+        data = [data; output];
+    end
+    
+    path = [homepath samplepath2];
+    disp(path);
+    for f = 1:length(fibril_ids2)
+        disp(['Fibril number ' num2str(f) ', id ' num2str(fibril_ids2(f))]);
+        [output] = basicImport(fibril_ids2(f),path);
+        hold on;
+        plot(output(:,1),output(:,2),'.');
+        data = [data; output];
+    end
+
+end
+%}
+
+% 30/10/2-18
+%{
+savenames = {'0p cold';
+    '1p cold';
+    '8p cold';
+    '64p cold';
+    '0p hot';
+    '1p hot';
+    '8p hot';
+    '64p hot';
+    };
+
+homepath = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\';
+allw = {};
+for s = 1:length(savenames)
+    
+    fibril_ids1 = ID{s};
+    fibril_ids2 = ID{s+8};
+    
+    samplepath1 = names{s};
+    samplepath2 = names{s+8};
+    
+    savepath = [homepath 'Heatmaps/highqual ' savenames{s}];
+    
+    path = [homepath samplepath1];
+    disp(path);
+    parfor f = 1:length(fibril_ids1)
+        disp(['Fibril number ' num2str(f) ', id ' num2str(fibril_ids1(f))]);
+        importAndSavePotential(fibril_ids1(f), path, savepath, f);
+    end
+    
+    path = [homepath samplepath2];
+    disp(path);
+    parfor f = 1:length(fibril_ids2)
+        
+        disp(['Fibril number ' num2str(f) ', id ' num2str(fibril_ids2(f))]);
+        importAndSavePotential(fibril_ids2(f), path, savepath, f+length(fibril_ids1));
+    end
+    
+end
+%}
+
+
+% 25/10/2018
+%{
+homepath = 'C:\Users\mbcx9hc4\Dropbox (The University of Manchester)\Data\I3K NIPAM Dynamics\Heatmaps\';
+allw = {};
+for s = 1:length(names)
+    
+    w = [];
+    fibril_ids = ID{s};
+    
+    samplepath = names{s};
+    
+    disp(samplepath);
+    
+    path = [homepath samplepath];
+    for f = 1:length(fibril_ids)
+        disp(['Fibril number ' num2str(f) ', id ' num2str(fibril_ids(f))]);
+        %process_fibril(fibril_ids(f));
+        %correctWidths(fibril_ids(f), path)
+        [tempW] = basicImport(fibril_ids(f),path);
+        w = [w; tempW];
+       
+    end
+    allw = [allw, w];
+end
+%}
+
+% 22/10/2018
+%{
+function [correctedWidth] = basicImport(id,path)
+
+    filename = [path 'fibril' num2str(id) '.mat'];
+    load(filename,'w','s','Lcval');
+    
+    new_s = 0:0.05:round(Lcval,1);
+    correctedWidth = convertToNewX(s,w,new_s);
+    
+    %correctedWidth = nanmean(w(:));
+end
+%}
 
 % 30/04
 %{
 for t = 2:7
     disp(t);
     fibril_ids = All(All(:,2)==t,1);
-    %{
+%{
     p{t} = [];
     q{t} = [];
     cw{t} = [];
-    %}
+%}
     parfor f = 1:length(fibril_ids)
         process_fibril(fibril_ids(f));
-        %{
+%{
         [tempP, tempQ] = basicImport(fibril_ids(f));
         p{t} = [p{t}; tempP];
         q{t} = [q{t}; tempQ];
         [width, correctedWidth,s] = tubeWidths(fibril_ids(f));
         cw{t} = [cw{t}; correctedWidth'];
-        %}
+%}
     end
         
     
@@ -150,7 +518,7 @@ load([path num2str(id) '.mat']);
 
 m = FMode2MSD(a);
 
-try 
+try
     plat = MSDPlateau(m);
 catch
     plat = m(100,:);
@@ -375,7 +743,7 @@ tau = [];
 
 for z = 1:length(goodid)
     q = [q;qt{z}];
-    tau = [tau; taut{z}]; 
+    tau = [tau; taut{z}];
 end
 %}
 
